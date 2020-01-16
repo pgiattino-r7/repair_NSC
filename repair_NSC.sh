@@ -7,7 +7,7 @@
 
 ##### DECLARE VARIABLES
 
-NEXPATH=$(find / -name nsc.sh | sed 's/\(nexpose\).*/\1/g')
+NEXPATH=$(find / -name nsc.sh | sed 's/\(nsc\).*/\1/g')
 
 ##### DEFINE FUNCTIONS
 
@@ -22,13 +22,15 @@ function check_os() {
 
 #function to perform cleanup if script is exited unexpectedly
 function cleanup() {
-	mv $NEXPATH/plugins.bak $NEXPATH/plugins
+	cd $NEXPATH
+	cd ..
+	mv plugins.bak plugins
 	logger "R7 - Script interrupted, restoring moved files"
 }
 
 #function to acquire serial number of console and store as variable and print
 function get_sn() {
-	SN=$(cat $NEXPATH/nsc/conf/nsc.xml | grep -oP '(sn=".{40}")' | cut -c 5-41)
+	SN=$(cat $NEXPATH/conf/nsc.xml | grep -oP '(sn=".{40}")' | cut -c 5-41)
 	echo "Nexpose Security Console serial number is $SN"
 	logger "R7 - Security Console serial number is $SN"
 }
@@ -49,15 +51,19 @@ function stop_postgresql() {
 
 #function to backup two important directories
 function backup() {
-	cp -p $NEXPATH/nsc/conf/userdb.xml $NEXPATH/nsc/conf/userdb.xml.bak
-	mv $NEXPATH/plugins $NEXPATH/plugins.bak
+	cp -p $NEXPATH/conf/userdb.xml $NEXPATH/conf/userdb.xml.bak
+	cd $NEXPATH
+	cd ..
+	mv plugins plugins.bak
 	logger "R7 - plugins folder and userdb.xml backed up."
 }
 
 #function to delete update directories
 function delete_dirs() {
-	rm -r $NEXPATH/updates/stagingFileData
-	rm -r $NEXPATH/updates/pending
+	cd $NEXPATH
+	cd ..
+	rm -r updates/stagingFileData
+	rm -r updates/pending
 	logger "R7 - update folders deleted."
 }
 
@@ -79,8 +85,10 @@ function run_installer() {
 
 #restore backed up folders
 function restore_dirs() {
-	mv $NEXPATH/nsc/conf/userdb.xml.bak $NEXPATH/nsc/conf/userdb.xml
-	mv $NEXPATH/plugins.bak $NEXPATH/plugins
+	mv $NEXPATH/conf/userdb.xml.bak $NEXPATH/conf/userdb.xml
+	cd $NEXPATH
+	cd ..
+	mv plugins.bak plugins
 	logger "R7 - Plugins folder and userdb.xml restored to original location."
 }
 
