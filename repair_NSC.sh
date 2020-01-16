@@ -7,7 +7,7 @@
 
 ##### DECLARE VARIABLES
 
-NEXPATH=$(find / -name nsc.sh | cut -d '/' -f1-4)
+NEXPATH=$(find / -name nsc.sh | sed 's/\(nexpose\).*/\1/g')
 
 ##### DEFINE FUNCTIONS
 
@@ -30,7 +30,7 @@ function cleanup() {
 function get_sn() {
 	SN=$(cat $NEXPATH/nsc/conf/nsc.xml | grep -oP '(sn=".{40}")' | cut -c 5-41)
 	echo "Nexpose Security Console serial number is $SN"
-	logger - "R7 - Security Console serial number is $SN"
+	logger "R7 - Security Console serial number is $SN"
 }
 
 #function to stop nexpose console service
