@@ -22,6 +22,7 @@ function check_os() {
 
 #function to perform cleanup if script is exited unexpectedly
 function cleanup() {
+	mv $NEXPATH/conf/userdb.xml.bak $NEXPATH/conf/userdb.xml
 	cd $NEXPATH
 	cd ..
 	mv plugins.bak plugins
